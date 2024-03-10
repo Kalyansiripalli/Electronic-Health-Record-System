@@ -25,9 +25,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         self.fields['hospitalId'].required = False
 
     def validate(self, attrs):
-        print("kalyam")
         email = attrs.get('email').lower()
-        print("kadaa")
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError("email already exists")
 
@@ -70,6 +68,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 userid=user.id, hospital_id=hospital_id)
 
         return user
+
+
+class UserConfirmationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['is_active']  # Assuming is_active is the only field to be updated for confirmation
 
 
 class UserLoginSerializer(serializers.Serializer):
