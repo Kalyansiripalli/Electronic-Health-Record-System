@@ -35,13 +35,13 @@ class AddDoctorView(APIView):
     def post(self, request, format=None):
         password = ''.join(random.choices(
             string.ascii_letters + string.digits, k=8))
-        
+
         serializer = AddDoctorSerializer(
-            data=request.data, context={'request': request,'password': password})
+            data=request.data, context={'request': request, 'password': password})
 
         if serializer.is_valid():
             email = serializer.validated_data['email']
-            data=serializer.save()
+            data = serializer.save()
             send_mail(
                 "Your profile has been created by the admin",
                 f"your password: {password}",

@@ -57,7 +57,7 @@ class AddDoctorSerializer(serializers.Serializer):
         return attrs
 
     def create(self, validated_data):
-        
+
         password = self.context.get('password')
 
         # Create a new User instance for the doctor
@@ -67,7 +67,7 @@ class AddDoctorSerializer(serializers.Serializer):
             role='doctor',
             password=password  # Assign the randomly generated password
         )
-        doctor.is_active=True
+        doctor.is_active = True
         doctor.save()
 
         # Create DoctorHospitalMapping

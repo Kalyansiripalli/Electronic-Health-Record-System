@@ -73,7 +73,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserConfirmationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['is_active']  # Assuming is_active is the only field to be updated for confirmation
+        # Assuming is_active is the only field to be updated for confirmation
+        fields = ['is_active']
 
 
 class UserLoginSerializer(serializers.Serializer):
