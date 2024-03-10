@@ -8,6 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from account.models import User
 from ehrmanagement.models import HospitalList, PatientList
 from .permissions import IsAdminUser
+import random
+import string
+from django.core.mail import send_mail
 
 
 class AddHospitalView(APIView):
@@ -30,11 +33,23 @@ class AddDoctorView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     def post(self, request, format=None):
+        password = ''.join(random.choices(
+            string.ascii_letters + string.digits, k=8))
+        
         serializer = AddDoctorSerializer(
-            data=request.data, context={'request': request})
+            data=request.data, context={'request': request,'password': password})
 
         if serializer.is_valid():
-            serializer.save()
+            email = serializer.validated_data['email']
+            data=serializer.save()
+            send_mail(
+                "Your profile has been created by the admin",
+                f"your password: {password}",
+                "verificmail999@gmail.com",
+                [email],
+                fail_silently=False,
+            )
+
             return Response({'msg': 'doctor added successfully'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
