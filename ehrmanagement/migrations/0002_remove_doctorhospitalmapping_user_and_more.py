@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='doctorhospitalmapping',
-            name='userid',
+            name='user_id',
             field=models.IntegerField(default=0),
         ),
     ]

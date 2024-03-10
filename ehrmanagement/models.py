@@ -3,11 +3,11 @@ from account.models import User
 
 
 class DoctorHospitalMapping(models.Model):
-    userid = models.IntegerField(default=0)  # Change 'user' to 'userid'
+    user_id = models.IntegerField(default=0)
     hospital_id = models.IntegerField()
 
     def __str__(self):
-        return str(self.userid)  # Return the string representation of userid
+        return str(self.user_id)
 
 
 class HospitalList(models.Model):

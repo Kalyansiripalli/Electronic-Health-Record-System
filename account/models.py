@@ -3,7 +3,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, name, password=None, ConfirmPassword=None, role=None):
+    def create_user(self, email, name, password=None, confirm_password=None, role=None):
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -50,7 +50,7 @@ class User(AbstractBaseUser):
     def __str__(self):
         return self.email
 
-    def has_perm(self, perm, obj=None):
+    def has_perm(self):
         return self.is_admin
 
     def has_module_perms(self, app_label):

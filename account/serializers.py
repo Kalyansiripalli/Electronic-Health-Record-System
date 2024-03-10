@@ -5,16 +5,16 @@ from ehrmanagement.models import DoctorHospitalMapping, HospitalList
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
 
-    ConfirmPassword = serializers.CharField(
+    confirm_password = serializers.CharField(
         style={'input_type': 'password'}, write_only=True)
     role = serializers.CharField(max_length=100, write_only=True)
     is_admin = serializers.BooleanField(default=False, read_only=True)
-    hospitalId = serializers.IntegerField(write_only=True, required=False)
+    hospital_id = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = User
         fields = ['email', 'name', 'password',
-                  'ConfirmPassword', 'role', 'is_admin', 'hospitalId']
+                  'confirm_password', 'role', 'is_admin', 'hospital_id']
         extra_kwargs = {
             'password': {'write_only': True},
             'is_admin': {'read_only': True},
@@ -22,7 +22,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['hospitalId'].required = False
+        self.fields['hospital_id'].required = False
 
     def validate(self, attrs):
         email = attrs.get('email').lower()
@@ -30,8 +30,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("email already exists")
 
         password = attrs.get('password')
-        ConfirmPassword = attrs.get('ConfirmPassword')
-        if password != ConfirmPassword:
+        confirm_password = attrs.get('confirm_password')
+        if password != confirm_password:
             raise serializers.ValidationError(
                 "Password and Confirm Password doesn't match")
 
@@ -40,21 +40,21 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         if role != 'doctor' and role != 'admin':
             raise serializers.ValidationError(
                 "role must be either admin or doctor")
-        if role == 'doctor' and 'hospitalId' not in attrs:
+        if role == 'doctor' and 'hospital_id' not in attrs:
             raise serializers.ValidationError(
                 "Hospital ID is required for doctor role")
         if role == 'doctor':
-            hospital_id = attrs.get('hospitalId')
+            hospital_id = attrs.get('hospital_id')
             if not HospitalList.objects.filter(id=hospital_id).exists():
                 raise serializers.ValidationError(
-                    "Currently we don't offer services in this hospital. Please reach out to the admin to add this hospital.")
+                    "Services not available at this hosptial. Contact admin to add.")
 
         return attrs
 
     def create(self, validated_data):
         role = validated_data.pop('role', 'NA').lower()
         email = validated_data.pop('email', 'NA').lower()
-        hospital_id = validated_data.pop('hospitalId', None)
+        hospital_id = validated_data.pop('hospital_id', None)
         user = User.objects.create_user(
             **validated_data, email=email, role=role)
 
@@ -65,7 +65,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         # Create Doctor entry
         if role == 'doctor':
             DoctorHospitalMapping.objects.create(
-                userid=user.id, hospital_id=hospital_id)
+                user_id=user.id, hospital_id=hospital_id)
 
         return user
 

@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from .renderers import EhrRenderer
-from .serializers import AddHospitalSerializer, AddDoctorSerializer, AddPatientsSerializer, DoctorSerializer, HospitalListSerializer, PatientListSerializer
+from .serializers import AddHospitalSerializer, AddDoctorSerializer, AddPatientsSerializer, DoctorListSerializer, \
+    HospitalListSerializer, PatientListSerializer
 from rest_framework.permissions import IsAuthenticated
 from account.models import User
 from ehrmanagement.models import HospitalList, PatientList
@@ -41,7 +42,7 @@ class AddDoctorView(APIView):
 
         if serializer.is_valid():
             email = serializer.validated_data['email']
-            data = serializer.save()
+            serializer.save()
             send_mail(
                 "Your profile has been created by the admin",
                 f"your password: {password}",
@@ -71,8 +72,8 @@ class AddPatientsView(APIView):
 
 
 class AllDoctorsView(generics.ListAPIView):
-    queryset = User.objects.filter(role='doctor')
-    serializer_class = DoctorSerializer
+    queryset = User.objects.filter(role='doctor', is_active=1)
+    serializer_class = DoctorListSerializer
 
 
 class AllHospitalsView(generics.ListAPIView):
